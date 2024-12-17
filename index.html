@@ -19,8 +19,43 @@
   <main id="mainContent" style="display: none; text-align: center;">
     <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
     <button onclick="logout()">Đăng Xuất</button>
-    <!-- Nội dung khác -->
-    <p>Chào mừng bạn đến với hệ thống quản lý khách hàng!</p>
+
+    <!-- Form Nhập Thông Tin -->
+    <form id="customerForm">
+      <input type="date" id="date" placeholder="Ngày" required />
+      <input type="text" id="name" placeholder="Tên Khách Hàng" required />
+      <input type="text" id="phone" placeholder="Số Điện Thoại" required />
+      <input type="text" id="address" placeholder="Địa Chỉ" />
+      <input type="text" id="product" placeholder="Sản Phẩm Quan Tâm" />
+      <input type="text" id="channel" placeholder="Thông Qua Kênh" />
+      <input type="date" id="approachDate" placeholder="Ngày Tiếp Cận" />
+      <input type="text" id="manager" placeholder="Người Phụ Trách" />
+      <input type="text" id="interaction" placeholder="Kết Quả Tương Tác" />
+      <input type="date" id="purchaseDate" placeholder="Ngày Mua Dự Kiến" />
+      <input type="text" id="notes" placeholder="Ghi Chú" />
+      <button type="submit">Thêm Khách Hàng</button>
+    </form>
+
+    <!-- Bảng Hiển Thị Dữ Liệu -->
+    <table border="1" style="margin: 20px auto;">
+      <thead>
+        <tr>
+          <th>Ngày</th>
+          <th>Tên Khách Hàng</th>
+          <th>Số Điện Thoại</th>
+          <th>Địa Chỉ</th>
+          <th>Sản Phẩm Quan Tâm</th>
+          <th>Thông Qua Kênh</th>
+          <th>Ngày Tiếp Cận</th>
+          <th>Người Phụ Trách</th>
+          <th>Kết Quả Tương Tác</th>
+          <th>Ngày Mua Dự Kiến</th>
+          <th>Ghi Chú</th>
+          <th>Hành Động</th>
+        </tr>
+      </thead>
+      <tbody id="customerTableBody"></tbody>
+    </table>
   </main>
 
   <!-- Logic JavaScript -->
