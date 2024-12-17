@@ -12,6 +12,9 @@
     th { background-color: #f2f2f2; }
     button { margin: 2px; }
     #mainContent { display: none; }
+    .row-red { background-color: #FFCCCC; }
+    .row-yellow { background-color: #FFFF99; }
+    .row-green { background-color: #CCFFCC; }
   </style>
 </head>
 <body>
@@ -127,10 +130,10 @@
       }
     };
 
-    // Thêm, Sửa khách hàng
+    // Thêm/Sửa khách hàng
     document.getElementById("customerForm").onsubmit = async (e) => {
       e.preventDefault();
-      const customerId = document.getElementById("customerId").value;
+      const id = document.getElementById("customerId").value;
       const formData = {
         date: document.getElementById("date").value,
         name: document.getElementById("name").value,
@@ -142,10 +145,10 @@
         manager: document.getElementById("manager").value,
         interaction: document.getElementById("interaction").value,
         purchaseDate: document.getElementById("purchaseDate").value,
-        notes: document.getElementById("notes").value,
+        notes: document.getElementById("notes").value
       };
 
-      if (customerId) await db.collection("customers").doc(customerId).update(formData);
+      if (id) await db.collection("customers").doc(id).update(formData);
       else await db.collection("customers").add(formData);
 
       fetchCustomers();
@@ -157,10 +160,16 @@
       const customerTableBody = document.getElementById("customerTableBody");
       customerTableBody.innerHTML = "";
       const snapshot = await db.collection("customers").get();
+
       snapshot.forEach((doc) => {
         const data = doc.data();
+        let rowClass = "";
+        if (!data.interaction) rowClass = "row-red";
+        else if (data.interaction === "Đang tính lại" || data.interaction === "Chưa có ý định") rowClass = "row-yellow";
+        else if (data.interaction === "Chuẩn bị mua") rowClass = "row-green";
+
         customerTableBody.innerHTML += `
-          <tr>
+          <tr class="${rowClass}">
             <td>${data.date}</td>
             <td>${data.name}</td>
             <td>${data.phone}</td>
@@ -189,7 +198,9 @@
 
     function editCustomer(id, data) {
       document.getElementById("customerId").value = id;
-      for (let key in data) document.getElementById(key).value = data[key] || "";
+      Object.keys(data).forEach((key) => {
+        if (document.getElementById(key)) document.getElementById(key).value = data[key];
+      });
     }
   </script>
 </body>
