@@ -1,4 +1,4 @@
-// Cấu hình Firebase
+// Cấu hình Firebase (dùng Firebase compat)
 const firebaseConfig = {
   apiKey: "AIzaSyCmI0wn8bymGbSoAj5fdHwazY-80GePliY",
   authDomain: "customermanagement-a522e.firebaseapp.com",
@@ -8,9 +8,11 @@ const firebaseConfig = {
   appId: "1:401838053324:web:0fa664db88a17510a9ef69",
 };
 
+// Khởi tạo Firebase
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
+// Biến DOM
 const customerForm = document.getElementById("customerForm");
 const customerTableBody = document.getElementById("customerTableBody");
 
@@ -58,7 +60,7 @@ async function fetchCustomers() {
         <td>${data.purchaseDate}</td>
         <td>${data.notes}</td>
         <td>
-          <button class="delete" onclick="deleteCustomer('${doc.id}')">Xóa</button>
+          <button onclick="deleteCustomer('${doc.id}')">Xóa</button>
         </td>
       </tr>
     `;
