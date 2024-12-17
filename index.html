@@ -1,72 +1,56 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quản Lý Khách Hàng Tiềm Năng</title>
-</head>
-<body>
-  <!-- Phần Đăng Nhập -->
-  <div id="loginContainer" style="text-align: center; margin-top: 50px;">
-    <h2>Đăng Nhập</h2>
-    <input type="password" id="password" placeholder="Nhập mật khẩu" />
-    <button onclick="checkLogin()">Đăng Nhập</button>
-    <p id="errorMessage" style="color: red; display: none;">Sai mật khẩu. Vui lòng thử lại!</p>
-  </div>
+<!-- Form Nhập Thông Tin -->
+<form id="customerForm">
+  <input type="date" id="date" placeholder="Ngày" required />
+  <input type="text" id="name" placeholder="Tên Khách Hàng" required />
+  <input type="text" id="phone" placeholder="Số Điện Thoại" required />
+  <input type="text" id="address" placeholder="Địa Chỉ" />
+  <input type="text" id="product" placeholder="Sản Phẩm Quan Tâm" />
 
-  <!-- Nội dung chính -->
-  <main id="mainContent" style="display: none;">
-    <h1 style="text-align: center;">Quản Lý Khách Hàng Tiềm Năng</h1>
-    <button onclick="logout()" style="float: right;">Đăng Xuất</button>
+  <!-- Lựa chọn Thông qua kênh -->
+  <select id="channel" required>
+    <option value="">Chọn Kênh</option>
+    <option value="Zalo">Zalo</option>
+    <option value="Facebook">Facebook</option>
+    <option value="Messenger">Messenger</option>
+    <option value="Tiktok">Tiktok</option>
+    <option value="Điện Thoại">Điện Thoại</option>
+    <option value="Khác">Khác</option>
+  </select>
 
-    <!-- Form Thêm Khách Hàng -->
-    <form id="customerForm" style="margin: 20px;">
-      <input type="date" id="date" placeholder="Ngày" required />
-      <input type="text" id="name" placeholder="Tên Khách Hàng" required />
-      <input type="text" id="phone" placeholder="Số Điện Thoại" required />
-      <input type="text" id="address" placeholder="Địa Chỉ" />
-      <input type="text" id="product" placeholder="Sản Phẩm Quan Tâm" />
-      <input type="text" id="channel" placeholder="Thông Qua Kênh" />
-      <input type="date" id="approachDate" placeholder="Ngày Tiếp Cận" />
-      <input type="text" id="manager" placeholder="Người Phụ Trách" />
-      <input type="text" id="interaction" placeholder="Kết Quả Tương Tác" />
-      <input type="date" id="purchaseDate" placeholder="Ngày Mua Dự Kiến" />
-      <input type="text" id="notes" placeholder="Ghi Chú" />
-      <button type="submit">Thêm Khách Hàng</button>
-    </form>
+  <input type="date" id="approachDate" placeholder="Ngày Tiếp Cận" />
+  <input type="text" id="manager" placeholder="Người Phụ Trách" />
 
-    <!-- Bảng Hiển Thị Dữ Liệu -->
-    <table border="1" style="width: 100%; text-align: center;">
-      <thead>
-        <tr>
-          <th>Ngày</th>
-          <th>Tên Khách Hàng</th>
-          <th>Số Điện Thoại</th>
-          <th>Địa Chỉ</th>
-          <th>Sản Phẩm Quan Tâm</th>
-          <th>Thông Qua Kênh</th>
-          <th>Ngày Tiếp Cận</th>
-          <th>Người Phụ Trách</th>
-          <th>Kết Quả Tương Tác</th>
-          <th>Ngày Mua Dự Kiến</th>
-          <th>Ghi Chú</th>
-          <th>Hành Động</th>
-        </tr>
-      </thead>
-      <tbody id="customerTableBody"></tbody>
-    </table>
-  </main>
+  <!-- Lựa chọn Kết quả tương tác -->
+  <select id="interaction">
+    <option value="">Chọn Kết Quả</option>
+    <option value="Đang tính lại">Đang tính lại</option>
+    <option value="Chưa có ý định">Chưa có ý định</option>
+    <option value="Chuẩn bị mua">Chuẩn bị mua</option>
+    <option value="Đã mua xe">Đã mua xe</option>
+  </select>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <input type="date" id="purchaseDate" placeholder="Ngày Mua Dự Kiến" />
+  <input type="text" id="notes" placeholder="Ghi Chú" />
+  <button type="submit">Thêm Khách Hàng</button>
+</form>
 
-  <!-- Logic JavaScript -->
-  <script src="app.js"></script>
-</body>
-</html>
-
-
-
-
-
+<!-- Bảng Hiển Thị Dữ Liệu -->
+<table border="1">
+  <thead>
+    <tr>
+      <th>Ngày</th>
+      <th>Tên Khách Hàng</th>
+      <th>Số Điện Thoại</th>
+      <th>Địa Chỉ</th>
+      <th>Sản Phẩm Quan Tâm</th>
+      <th>Thông Qua Kênh</th>
+      <th>Ngày Tiếp Cận</th>
+      <th>Người Phụ Trách</th>
+      <th>Kết Quả Tương Tác</th>
+      <th>Ngày Mua Dự Kiến</th>
+      <th>Ghi Chú</th>
+      <th>Hành Động</th>
+    </tr>
+  </thead>
+  <tbody id="customerTableBody"></tbody>
+</table>
