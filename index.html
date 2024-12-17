@@ -5,115 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Lý Khách Hàng</title>
   <link rel="stylesheet" href="style.css">
-  <h2>Đăng Nhập</h2>
-<div id="loginContainer">
-  <input type="email" id="email" placeholder="Email" />
-  <input type="password" id="password" placeholder="Mật khẩu" />
-  <button id="loginButton">Đăng Nhập</button>
-  <button id="logoutButton" style="display:none;">Đăng Xuất</button>
-</div>
-
-  <!-- Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
 </head>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 <body>
-  <!-- Firebase Authentication -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-  <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
-  
-  <!-- Form Nhập Thông Tin -->
-  <form id="customerForm">
-    <input type="date" id="date" placeholder="Ngày" required />
-    <input type="text" id="name" placeholder="Tên Khách Hàng" required />
-    <input type="text" id="phone" placeholder="Số Điện Thoại" required />
-    <input type="text" id="address" placeholder="Địa Chỉ" />
-    <input type="text" id="product" placeholder="Sản Phẩm Quan Tâm" />
-    <input type="text" id="channel" placeholder="Thông Qua Kênh" />
-    <input type="date" id="approachDate" placeholder="Ngày Tiếp Cận" />
-    <input type="text" id="manager" placeholder="Người Phụ Trách" />
-    <input type="text" id="interaction" placeholder="Kết Quả Tương Tác" />
-    <input type="date" id="purchaseDate" placeholder="Ngày Mua Dự Kiến" />
-    <input type="text" id="notes" placeholder="Ghi Chú" />
-    <button type="submit">Thêm Khách Hàng</button>
-  </form>
-customerTableBody.innerHTML += `
-  <tr>
-    <td>${data.date}</td>
-    <td>${data.name}</td>
-    <td>${data.phone}</td>
-    <td>${data.address}</td>
-    <td>${data.product}</td>
-    <td>${data.channel}</td>
-    <td>${data.approachDate}</td>
-    <td>${data.manager}</td>
-    <td>${data.interaction}</td>
-    <td>${data.purchaseDate}</td>
-    <td>${data.notes}</td>
-    <td>
-      <button onclick="editCustomer('${doc.id}', '${data.name}', '${data.phone}', '${data.address}')">Sửa</button>
-      <button onclick="deleteCustomer('${doc.id}')">Xóa</button>
-    </td>
-  </tr>
-`;
-// Hàm sửa khách hàng
-function editCustomer(id, name, phone, address) {
-  document.getElementById("name").value = name;
-  document.getElementById("phone").value = phone;
-  document.getElementById("address").value = address;
+  <!-- Phần Đăng Nhập -->
+  <div id="loginContainer" style="text-align: center; margin-top: 50px;">
+    <h2>Đăng Nhập</h2>
+    <input type="password" id="password" placeholder="Nhập mật khẩu" />
+    <button onclick="checkLogin()">Đăng Nhập</button>
+    <p id="errorMessage" style="color: red; display: none;">Sai mật khẩu. Vui lòng thử lại!</p>
+  </div>
 
-  document.getElementById("customerForm").onsubmit = async (e) => {
-    e.preventDefault();
-    const updatedData = {
-      name: document.getElementById("name").value,
-      phone: document.getElementById("phone").value,
-      address: document.getElementById("address").value,
-    };
+  <!-- Nội dung chính -->
+  <main id="mainContent" style="display: none; text-align: center;">
+    <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
+    <button onclick="logout()">Đăng Xuất</button>
+    <!-- Nội dung khác -->
+    <p>Chào mừng bạn đến với hệ thống quản lý khách hàng!</p>
+  </main>
 
-    await db.collection("customers").doc(id).update(updatedData);
-    alert("Cập nhật thành công!");
-    fetchCustomers();
-    customerForm.reset();
-    document.getElementById("customerForm").onsubmit = addCustomer; // Reset lại form
-  };
-}
-async function addCustomer(e) {
-  e.preventDefault();
-  const formData = {
-    name: document.getElementById("name").value,
-    phone: document.getElementById("phone").value,
-    address: document.getElementById("address").value,
-  };
-
-  await db.collection("customers").add(formData);
-  fetchCustomers();
-  customerForm.reset();
-}
-customerForm.onsubmit = addCustomer;
-
-  <!-- Bảng Hiển Thị Dữ Liệu -->
-  <table border="1">
-    <thead>
-      <tr>
-        <th>Ngày</th>
-        <th>Tên Khách Hàng</th>
-        <th>Số Điện Thoại</th>
-        <th>Địa Chỉ</th>
-        <th>Sản Phẩm Quan Tâm</th>
-        <th>Thông Qua Kênh</th>
-        <th>Ngày Tiếp Cận</th>
-        <th>Người Phụ Trách</th>
-        <th>Kết Quả Tương Tác</th>
-        <th>Ngày Mua Dự Kiến</th>
-        <th>Ghi Chú</th>
-        <th>Hành Động</th>
-      </tr>
-    </thead>
-    <tbody id="customerTableBody"></tbody>
-  </table>
-
+  <!-- Logic JavaScript -->
   <script src="app.js"></script>
 </body>
 </html>
