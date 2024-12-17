@@ -75,3 +75,48 @@ async function deleteCustomer(id) {
 
 // Hiển thị dữ liệu khi load trang
 fetchCustomers();
+// Firebase Authentication
+const auth = firebase.auth();
+
+// Đăng nhập người dùng
+document.getElementById("loginButton").addEventListener("click", () => {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      alert("Đăng nhập thành công!");
+      toggleAuthUI(true);
+      fetchCustomers();
+    })
+    .catch((error) => {
+      alert("Lỗi đăng nhập: " + error.message);
+    });
+});
+
+// Đăng xuất người dùng
+document.getElementById("logoutButton").addEventListener("click", () => {
+  auth.signOut()
+    .then(() => {
+      alert("Đã đăng xuất!");
+      toggleAuthUI(false);
+    });
+});
+
+// Kiểm tra trạng thái đăng nhập khi load trang
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    toggleAuthUI(true);
+    fetchCustomers();
+  } else {
+    toggleAuthUI(false);
+  }
+});
+
+// Hàm ẩn/hiện UI đăng nhập và đăng xuất
+function toggleAuthUI(isLoggedIn) {
+  document.getElementById("loginButton").style.display = isLoggedIn ? "none" : "inline-block";
+  document.getElementById("logoutButton").style.display = isLoggedIn ? "inline-block" : "none";
+  document.getElementById("customerForm").style.display = isLoggedIn ? "block" : "none";
+}
+
