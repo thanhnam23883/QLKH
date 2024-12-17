@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Lý Khách Hàng</title>
   <link rel="stylesheet" href="style.css">
+  <h2>Đăng Nhập</h2>
+<div id="loginContainer">
+  <input type="email" id="email" placeholder="Email" />
+  <input type="password" id="password" placeholder="Mật khẩu" />
+  <button id="loginButton">Đăng Nhập</button>
+  <button id="logoutButton" style="display:none;">Đăng Xuất</button>
+</div>
+
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js"></script>
@@ -12,6 +20,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 <body>
+  <!-- Firebase Authentication -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
   <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
   
   <!-- Form Nhập Thông Tin -->
