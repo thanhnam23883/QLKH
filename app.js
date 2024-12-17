@@ -41,27 +41,34 @@ window.onload = () => {
   }
 };
 
-// Thêm khách hàng
+// Thêm khách hàng vào Firestore
 document.getElementById("customerForm").addEventListener("submit", async (e) => {
   e.preventDefault();
+
+  // Lấy tất cả giá trị từ form
   const formData = {
-    date: document.getElementById("date").value,
-    name: document.getElementById("name").value,
-    phone: document.getElementById("phone").value,
-    address: document.getElementById("address").value,
-    product: document.getElementById("product").value,
-    channel: document.getElementById("channel").value,
-    approachDate: document.getElementById("approachDate").value,
-    manager: document.getElementById("manager").value,
-    interaction: document.getElementById("interaction").value,
-    purchaseDate: document.getElementById("purchaseDate").value,
-    notes: document.getElementById("notes").value,
-    history: "Thêm mới khách hàng",
+    date: document.getElementById("date").value || "", // Ngày
+    name: document.getElementById("name").value || "", // Tên Khách Hàng
+    phone: document.getElementById("phone").value || "", // Số Điện Thoại
+    address: document.getElementById("address").value || "", // Địa Chỉ
+    product: document.getElementById("product").value || "", // Sản Phẩm Quan Tâm
+    channel: document.getElementById("channel").value || "", // Thông Qua Kênh
+    approachDate: document.getElementById("approachDate").value || "", // Ngày Tiếp Cận
+    manager: document.getElementById("manager").value || "", // Người Phụ Trách
+    interaction: document.getElementById("interaction").value || "", // Kết Quả Tương Tác
+    purchaseDate: document.getElementById("purchaseDate").value || "", // Ngày Mua Dự Kiến
+    notes: document.getElementById("notes").value || "", // Ghi Chú
+    history: "Thêm mới khách hàng", // Ghi chú lịch sử
   };
 
-  await db.collection("customers").add(formData);
-  fetchCustomers();
-  document.getElementById("customerForm").reset();
+  try {
+    // Ghi dữ liệu vào Firestore
+    await db.collection("customers").add(formData);
+    fetchCustomers(); // Hiển thị lại danh sách khách hàng
+    document.getElementById("customerForm").reset(); // Reset form
+  } catch (error) {
+    console.error("Lỗi khi thêm khách hàng:", error);
+  }
 });
 
 // Hiển thị dữ liệu khách hàng
