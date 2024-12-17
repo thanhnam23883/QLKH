@@ -84,7 +84,7 @@
     </table>
   </div>
 
-  <!-- Firebase -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
@@ -182,7 +182,7 @@
             <td>${data.purchaseDate}</td>
             <td>${data.notes}</td>
             <td>
-              <button onclick="editCustomer('${doc.id}', ${JSON.stringify(data)})">Sửa</button>
+              <button onclick="editCustomer('${doc.id}')">Sửa</button>
               <button onclick="deleteCustomer('${doc.id}')">Xóa</button>
             </td>
           </tr>`;
@@ -196,11 +196,15 @@
       }
     }
 
-    function editCustomer(id, data) {
-      document.getElementById("customerId").value = id;
-      Object.keys(data).forEach((key) => {
-        if (document.getElementById(key)) document.getElementById(key).value = data[key];
-      });
+    async function editCustomer(id) {
+      const doc = await db.collection("customers").doc(id).get();
+      if (doc.exists) {
+        const data = doc.data();
+        document.getElementById("customerId").value = id;
+        for (let key in data) {
+          if (document.getElementById(key)) document.getElementById(key).value = data[key];
+        }
+      }
     }
   </script>
 </body>
