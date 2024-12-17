@@ -8,12 +8,13 @@
     body {
       font-family: Arial, sans-serif;
     }
-    h1 {
+    h1, h2 {
       text-align: center;
     }
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 20px;
     }
     th, td {
       border: 1px solid #ddd;
@@ -36,14 +37,14 @@
   <div id="loginContainer" style="text-align: center; margin-top: 50px;">
     <h2>Đăng Nhập</h2>
     <input type="password" id="password" placeholder="Nhập mật khẩu">
-    <button onclick="checkLogin()">Đăng Nhập</button>
+    <button id="loginButton">Đăng Nhập</button>
     <p id="errorMessage" style="color: red; display: none;">Sai mật khẩu. Vui lòng thử lại!</p>
   </div>
 
   <!-- Nội Dung Chính -->
   <div id="mainContent">
     <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
-    <button onclick="logout()">Đăng Xuất</button>
+    <button id="logoutButton">Đăng Xuất</button>
 
     <!-- Form Thêm Khách Hàng -->
     <form id="customerForm">
@@ -52,8 +53,6 @@
       <input type="text" id="phone" placeholder="Số Điện Thoại" required>
       <input type="text" id="address" placeholder="Địa Chỉ" required>
       <input type="text" id="product" placeholder="Sản Phẩm Quan Tâm" required>
-
-      <!-- Thông qua kênh -->
       <select id="channel" required>
         <option value="">Chọn Kênh</option>
         <option value="Zalo">Zalo</option>
@@ -63,11 +62,8 @@
         <option value="Điện Thoại">Điện Thoại</option>
         <option value="Khác">Khác</option>
       </select>
-
       <input type="date" id="approachDate" placeholder="Ngày Tiếp Cận" required>
       <input type="text" id="manager" placeholder="Người Phụ Trách" required>
-
-      <!-- Kết quả tương tác -->
       <select id="interaction" required>
         <option value="">Chọn Kết Quả</option>
         <option value="Đang tính lại">Đang tính lại</option>
@@ -75,13 +71,12 @@
         <option value="Chuẩn bị mua">Chuẩn bị mua</option>
         <option value="Đã mua xe">Đã mua xe</option>
       </select>
-
       <input type="date" id="purchaseDate" placeholder="Ngày Mua Dự Kiến" required>
       <input type="text" id="notes" placeholder="Ghi Chú">
       <button type="submit">Thêm Khách Hàng</button>
     </form>
 
-    <!-- Bảng Hiển Thị Dữ Liệu -->
+    <!-- Bảng Hiển Thị -->
     <table>
       <thead>
         <tr>
@@ -103,11 +98,110 @@
     </table>
   </div>
 
-  <!-- Firebase Scripts -->
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 
   <!-- App Script -->
-  <script src="app.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCm...",
+      authDomain: "customermanagement-a522e.firebaseapp.com",
+      projectId: "customermanagement-a522e",
+      storageBucket: "customermanagement-a522e.appspot.com",
+      messagingSenderId: "401838053324",
+      appId: "1:401838053324:web:0fa664db88a17510a9ef69",
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Đăng nhập
+    document.getElementById("loginButton").onclick = () => {
+      const password = document.getElementById("password").value;
+      if (password === "123456") {
+        localStorage.setItem("loggedIn", "true");
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        fetchCustomers();
+      } else {
+        document.getElementById("errorMessage").style.display = "block";
+      }
+    };
+
+    // Đăng xuất
+    document.getElementById("logoutButton").onclick = () => {
+      localStorage.removeItem("loggedIn");
+      document.getElementById("loginContainer").style.display = "block";
+      document.getElementById("mainContent").style.display = "none";
+    };
+
+    // Duy trì phiên đăng nhập
+    window.onload = () => {
+      if (localStorage.getItem("loggedIn") === "true") {
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("mainContent").style.display = "block";
+        fetchCustomers();
+      }
+    };
+
+    // Thêm khách hàng
+    document.getElementById("customerForm").onsubmit = async (e) => {
+      e.preventDefault();
+      const formData = {
+        date: document.getElementById("date").value,
+        name: document.getElementById("name").value,
+        phone: document.getElementById("phone").value,
+        address: document.getElementById("address").value,
+        product: document.getElementById("product").value,
+        channel: document.getElementById("channel").value,
+        approachDate: document.getElementById("approachDate").value,
+        manager: document.getElementById("manager").value,
+        interaction: document.getElementById("interaction").value,
+        purchaseDate: document.getElementById("purchaseDate").value,
+        notes: document.getElementById("notes").value,
+      };
+      await db.collection("customers").add(formData);
+      fetchCustomers();
+      e.target.reset();
+    };
+
+    // Hiển thị khách hàng
+    async function fetchCustomers() {
+      const customerTableBody = document.getElementById("customerTableBody");
+      customerTableBody.innerHTML = "";
+      const snapshot = await db.collection("customers").get();
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        let rowColor = "";
+
+        switch (data.interaction) {
+          case "":
+          case null:
+            rowColor = "background-color: #FFCCCC;"; break;
+          case "Đang tính lại":
+          case "Chưa có ý định":
+            rowColor = "background-color: #FFFF99;"; break;
+          case "Chuẩn bị mua":
+            rowColor = "background-color: #CCFFCC;"; break;
+        }
+
+        customerTableBody.innerHTML += `
+          <tr style="${rowColor}">
+            <td>${data.date}</td>
+            <td>${data.name}</td>
+            <td>${data.phone}</td>
+            <td>${data.address}</td>
+            <td>${data.product}</td>
+            <td>${data.channel}</td>
+            <td>${data.approachDate}</td>
+            <td>${data.manager}</td>
+            <td>${data.interaction}</td>
+            <td>${data.purchaseDate}</td>
+            <td>${data.notes}</td>
+          </tr>`;
+      });
+    }
+  </script>
 </body>
 </html>
