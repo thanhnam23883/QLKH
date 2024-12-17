@@ -96,9 +96,11 @@ async function fetchCustomers() {
 
 // Xóa khách hàng
 async function deleteCustomer(id) {
-  const historyNote = prompt("Ghi chú lý do xóa:");
-  if (historyNote) {
-    await db.collection("customers").doc(id).update({ history: `Xóa: ${historyNote}` });
+  const reason = prompt("Ghi chú lý do xóa khách hàng:");
+  if (reason) {
+    await db.collection("customers").doc(id).update({
+      history: `Xóa: ${reason}`,
+    });
     await db.collection("customers").doc(id).delete();
     fetchCustomers();
   }
@@ -107,11 +109,11 @@ async function deleteCustomer(id) {
 // Sửa khách hàng
 async function editCustomer(id, name) {
   const newName = prompt("Nhập tên mới:", name);
-  const historyNote = prompt("Ghi chú lý do sửa:");
-  if (newName && historyNote) {
+  const reason = prompt("Ghi chú lý do sửa khách hàng:");
+  if (newName && reason) {
     await db.collection("customers").doc(id).update({
       name: newName,
-      history: `Sửa: ${historyNote}`,
+      history: `Sửa: ${reason}`,
     });
     fetchCustomers();
   }
