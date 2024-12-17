@@ -87,11 +87,20 @@
 
   <!-- App Script -->
   <script>
-    const firebaseConfig = { /* Thêm cấu hình Firebase của bạn ở đây */ };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCmI0wn8bymGbSoAj5fdHwazY-80GePliY",
+      authDomain: "customermanagement-a522e.firebaseapp.com",
+      projectId: "customermanagement-a522e",
+      storageBucket: "customermanagement-a522e.appspot.com",
+      messagingSenderId: "401838053324",
+      appId: "1:401838053324:web:0fa664db88a17510a9ef69",
+      measurementId: "G-GCETTY2Q9T"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // Đăng nhập
     document.getElementById("loginButton").onclick = () => {
       const password = document.getElementById("password").value;
       if (password === "123456") {
@@ -118,6 +127,7 @@
       }
     };
 
+    // Thêm, Sửa khách hàng
     document.getElementById("customerForm").onsubmit = async (e) => {
       e.preventDefault();
       const customerId = document.getElementById("customerId").value;
@@ -135,11 +145,9 @@
         notes: document.getElementById("notes").value,
       };
 
-      if (customerId) {
-        await db.collection("customers").doc(customerId).update(formData);
-      } else {
-        await db.collection("customers").add(formData);
-      }
+      if (customerId) await db.collection("customers").doc(customerId).update(formData);
+      else await db.collection("customers").add(formData);
+
       fetchCustomers();
       e.target.reset();
       document.getElementById("customerId").value = "";
@@ -181,17 +189,7 @@
 
     function editCustomer(id, data) {
       document.getElementById("customerId").value = id;
-      document.getElementById("date").value = data.date || "";
-      document.getElementById("name").value = data.name || "";
-      document.getElementById("phone").value = data.phone || "";
-      document.getElementById("address").value = data.address || "";
-      document.getElementById("product").value = data.product || "";
-      document.getElementById("channel").value = data.channel || "";
-      document.getElementById("approachDate").value = data.approachDate || "";
-      document.getElementById("manager").value = data.manager || "";
-      document.getElementById("interaction").value = data.interaction || "";
-      document.getElementById("purchaseDate").value = data.purchaseDate || "";
-      document.getElementById("notes").value = data.notes || "";
+      for (let key in data) document.getElementById(key).value = data[key] || "";
     }
   </script>
 </body>
