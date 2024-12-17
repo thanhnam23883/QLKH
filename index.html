@@ -18,17 +18,35 @@
   <main id="mainContent" style="display: none; text-align: center;">
     <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
     <button onclick="logout()">Đăng Xuất</button>
-    <p>Chào mừng bạn đến với hệ thống quản lý khách hàng!</p>
+
+    <!-- Form Nhập Thông Tin -->
+    <form id="customerForm" style="margin-top: 20px;">
+      <input type="text" id="name" placeholder="Tên Khách Hàng" required />
+      <input type="text" id="phone" placeholder="Số Điện Thoại" required />
+      <button type="submit">Thêm Khách Hàng</button>
+    </form>
+
+    <!-- Bảng Hiển Thị Dữ Liệu -->
+    <table border="1" style="margin: 20px auto; width: 50%;">
+      <thead>
+        <tr>
+          <th>Tên Khách Hàng</th>
+          <th>Số Điện Thoại</th>
+          <th>Hành Động</th>
+        </tr>
+      </thead>
+      <tbody id="customerTableBody"></tbody>
+    </table>
   </main>
 
   <!-- Firebase Libraries -->
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
   <!-- Logic JavaScript -->
   <script src="app.js"></script>
 </body>
 </html>
+
 
 
