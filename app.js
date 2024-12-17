@@ -11,7 +11,36 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Thêm khách hàng vào Firestore
+// Đăng nhập
+function checkLogin() {
+  const password = document.getElementById("password").value;
+  if (password === "123456") {
+    localStorage.setItem("loggedIn", "true");
+    document.getElementById("loginContainer").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
+    fetchCustomers();
+  } else {
+    document.getElementById("errorMessage").style.display = "block";
+  }
+}
+
+// Đăng xuất
+function logout() {
+  localStorage.removeItem("loggedIn");
+  document.getElementById("loginContainer").style.display = "block";
+  document.getElementById("mainContent").style.display = "none";
+}
+
+// Duy trì phiên đăng nhập
+window.onload = () => {
+  if (localStorage.getItem("loggedIn") === "true") {
+    document.getElementById("loginContainer").style.display = "none";
+    document.getElementById("mainContent").style.display = "block";
+    fetchCustomers();
+  }
+};
+
+// Thêm khách hàng
 document.getElementById("customerForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
@@ -34,12 +63,12 @@ document.getElementById("customerForm").addEventListener("submit", async (e) => 
   document.getElementById("customerForm").reset();
 });
 
-// Hiển thị dữ liệu và màu sắc theo điều kiện
+// Hiển thị dữ liệu khách hàng
 async function fetchCustomers() {
   const customerTableBody = document.getElementById("customerTableBody");
   customerTableBody.innerHTML = "";
-
   const snapshot = await db.collection("customers").get();
+
   snapshot.forEach((doc) => {
     const data = doc.data();
     let rowColor = "";
@@ -47,17 +76,12 @@ async function fetchCustomers() {
     switch (data.interaction) {
       case "":
       case null:
-        rowColor = "background-color: #FFCCCC;"; // Màu đỏ
-        break;
+        rowColor = "background-color: #FFCCCC;"; break; // Màu đỏ
       case "Đang tính lại":
       case "Chưa có ý định":
-        rowColor = "background-color: #FFFF99;"; // Màu vàng
-        break;
+        rowColor = "background-color: #FFFF99;"; break; // Màu vàng
       case "Chuẩn bị mua":
-        rowColor = "background-color: #CCFFCC;"; // Màu xanh
-        break;
-      default:
-        rowColor = ""; // Bình thường
+        rowColor = "background-color: #CCFFCC;"; break; // Màu xanh
     }
 
     customerTableBody.innerHTML += `
@@ -74,13 +98,9 @@ async function fetchCustomers() {
         <td>${data.purchaseDate}</td>
         <td>${data.notes}</td>
         <td>
-          <button onclick="editCustomer('${doc.id}', '${data.name}')">Sửa</button>
           <button onclick="deleteCustomer('${doc.id}')">Xóa</button>
         </td>
       </tr>
     `;
   });
 }
-
-// Lấy dữ liệu khi tải trang
-window.onload = fetchCustomers;
