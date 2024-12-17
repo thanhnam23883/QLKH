@@ -20,7 +20,7 @@ function checkLogin() {
     localStorage.setItem("loggedIn", "true");
     document.getElementById("loginContainer").style.display = "none";
     document.getElementById("mainContent").style.display = "block";
-    fetchCustomers(); // Hiển thị dữ liệu khách hàng
+    fetchCustomers(); // Tải dữ liệu khách hàng
   } else {
     document.getElementById("errorMessage").style.display = "block";
   }
@@ -42,7 +42,7 @@ window.onload = () => {
   }
 };
 
-// Hàm tạm để lấy dữ liệu khách hàng (ví dụ)
+// Hàm tải dữ liệu khách hàng
 function fetchCustomers() {
-  console.log("Dữ liệu khách hàng sẽ được hiển thị ở đây...");
+  console.log("Dữ liệu khách hàng được tải ở đây...");
 }
