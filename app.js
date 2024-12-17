@@ -12,7 +12,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-// Hàm kiểm tra mật khẩu đăng nhập
+// Đăng nhập
 function checkLogin() {
   const password = document.getElementById("password").value;
   if (password === "123456") {
@@ -25,14 +25,14 @@ function checkLogin() {
   }
 }
 
-// Hàm đăng xuất
+// Đăng xuất
 function logout() {
   localStorage.removeItem("loggedIn");
   document.getElementById("loginContainer").style.display = "block";
   document.getElementById("mainContent").style.display = "none";
 }
 
-// Duy trì trạng thái đăng nhập khi load lại trang
+// Duy trì đăng nhập
 window.onload = () => {
   if (localStorage.getItem("loggedIn") === "true") {
     document.getElementById("loginContainer").style.display = "none";
@@ -41,34 +41,52 @@ window.onload = () => {
   }
 };
 
-// Thêm dữ liệu khách hàng
+// Thêm khách hàng
 document.getElementById("customerForm").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const name = document.getElementById("name").value;
-  const phone = document.getElementById("phone").value;
+  const formData = {
+    date: document.getElementById("date").value,
+    name: document.getElementById("name").value,
+    phone: document.getElementById("phone").value,
+    address: document.getElementById("address").value,
+    product: document.getElementById("product").value,
+    channel: document.getElementById("channel").value,
+    approachDate: document.getElementById("approachDate").value,
+    manager: document.getElementById("manager").value,
+    interaction: document.getElementById("interaction").value,
+    purchaseDate: document.getElementById("purchaseDate").value,
+    notes: document.getElementById("notes").value,
+    history: "Thêm mới khách hàng",
+  };
 
-  if (name && phone) {
-    await db.collection("customers").add({ name, phone });
-    fetchCustomers();
-    document.getElementById("customerForm").reset();
-  } else {
-    alert("Vui lòng nhập đầy đủ thông tin!");
-  }
+  await db.collection("customers").add(formData);
+  fetchCustomers();
+  document.getElementById("customerForm").reset();
 });
 
 // Hiển thị dữ liệu khách hàng
 async function fetchCustomers() {
   const customerTableBody = document.getElementById("customerTableBody");
   customerTableBody.innerHTML = "";
-
   const snapshot = await db.collection("customers").get();
+
   snapshot.forEach((doc) => {
     const data = doc.data();
     customerTableBody.innerHTML += `
       <tr>
+        <td>${data.date}</td>
         <td>${data.name}</td>
         <td>${data.phone}</td>
+        <td>${data.address}</td>
+        <td>${data.product}</td>
+        <td>${data.channel}</td>
+        <td>${data.approachDate}</td>
+        <td>${data.manager}</td>
+        <td>${data.interaction}</td>
+        <td>${data.purchaseDate}</td>
+        <td>${data.notes}</td>
         <td>
+          <button onclick="editCustomer('${doc.id}', '${data.name}')">Sửa</button>
           <button onclick="deleteCustomer('${doc.id}')">Xóa</button>
         </td>
       </tr>
@@ -78,9 +96,23 @@ async function fetchCustomers() {
 
 // Xóa khách hàng
 async function deleteCustomer(id) {
-  if (confirm("Bạn có chắc chắn muốn xóa khách hàng này không?")) {
+  const historyNote = prompt("Ghi chú lý do xóa:");
+  if (historyNote) {
+    await db.collection("customers").doc(id).update({ history: `Xóa: ${historyNote}` });
     await db.collection("customers").doc(id).delete();
     fetchCustomers();
   }
 }
 
+// Sửa khách hàng
+async function editCustomer(id, name) {
+  const newName = prompt("Nhập tên mới:", name);
+  const historyNote = prompt("Ghi chú lý do sửa:");
+  if (newName && historyNote) {
+    await db.collection("customers").doc(id).update({
+      name: newName,
+      history: `Sửa: ${historyNote}`,
+    });
+    fetchCustomers();
+  }
+}
