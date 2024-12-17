@@ -28,8 +28,9 @@
     <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
     <button id="logoutButton">Đăng Xuất</button>
 
-    <!-- Form Thêm Khách Hàng -->
+    <!-- Form Thêm/Sửa Khách Hàng -->
     <form id="customerForm">
+      <input type="hidden" id="customerId">
       <input type="date" id="date" placeholder="Ngày" required>
       <input type="text" id="name" placeholder="Tên Khách Hàng" required>
       <input type="text" id="phone" placeholder="Số Điện Thoại" required>
@@ -55,7 +56,7 @@
       </select>
       <input type="date" id="purchaseDate" placeholder="Ngày Mua Dự Kiến" required>
       <input type="text" id="notes" placeholder="Ghi Chú">
-      <button type="submit">Thêm Khách Hàng</button>
+      <button type="submit">Lưu</button>
     </form>
 
     <!-- Bảng Hiển Thị -->
@@ -86,19 +87,11 @@
 
   <!-- App Script -->
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCm...",
-      authDomain: "customermanagement-a522e.firebaseapp.com",
-      projectId: "customermanagement-a522e",
-      storageBucket: "customermanagement-a522e.appspot.com",
-      messagingSenderId: "401838053324",
-      appId: "1:401838053324:web:0fa664db88a17510a9ef69",
-    };
+    const firebaseConfig = { /* Thêm cấu hình Firebase của bạn ở đây */ };
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Đăng nhập
     document.getElementById("loginButton").onclick = () => {
       const password = document.getElementById("password").value;
       if (password === "123456") {
@@ -111,7 +104,6 @@
       }
     };
 
-    // Đăng xuất
     document.getElementById("logoutButton").onclick = () => {
       localStorage.removeItem("loggedIn");
       document.getElementById("loginContainer").style.display = "block";
@@ -126,9 +118,9 @@
       }
     };
 
-    // Thêm khách hàng
     document.getElementById("customerForm").onsubmit = async (e) => {
       e.preventDefault();
+      const customerId = document.getElementById("customerId").value;
       const formData = {
         date: document.getElementById("date").value,
         name: document.getElementById("name").value,
@@ -142,9 +134,15 @@
         purchaseDate: document.getElementById("purchaseDate").value,
         notes: document.getElementById("notes").value,
       };
-      await db.collection("customers").add(formData);
+
+      if (customerId) {
+        await db.collection("customers").doc(customerId).update(formData);
+      } else {
+        await db.collection("customers").add(formData);
+      }
       fetchCustomers();
       e.target.reset();
+      document.getElementById("customerId").value = "";
     };
 
     async function fetchCustomers() {
@@ -153,13 +151,8 @@
       const snapshot = await db.collection("customers").get();
       snapshot.forEach((doc) => {
         const data = doc.data();
-        let rowColor = "";
-        if (!data.interaction) rowColor = "background-color: #FFCCCC;";
-        else if (data.interaction === "Đang tính lại" || data.interaction === "Chưa có ý định") rowColor = "background-color: #FFFF99;";
-        else if (data.interaction === "Chuẩn bị mua") rowColor = "background-color: #CCFFCC;";
-
         customerTableBody.innerHTML += `
-          <tr style="${rowColor}">
+          <tr>
             <td>${data.date}</td>
             <td>${data.name}</td>
             <td>${data.phone}</td>
@@ -172,7 +165,7 @@
             <td>${data.purchaseDate}</td>
             <td>${data.notes}</td>
             <td>
-              <button onclick="editCustomer('${doc.id}', '${data.name}')">Sửa</button>
+              <button onclick="editCustomer('${doc.id}', ${JSON.stringify(data)})">Sửa</button>
               <button onclick="deleteCustomer('${doc.id}')">Xóa</button>
             </td>
           </tr>`;
@@ -186,12 +179,19 @@
       }
     }
 
-    async function editCustomer(id, currentName) {
-      const newName = prompt("Nhập tên mới cho khách hàng:", currentName);
-      if (newName) {
-        await db.collection("customers").doc(id).update({ name: newName });
-        fetchCustomers();
-      }
+    function editCustomer(id, data) {
+      document.getElementById("customerId").value = id;
+      document.getElementById("date").value = data.date || "";
+      document.getElementById("name").value = data.name || "";
+      document.getElementById("phone").value = data.phone || "";
+      document.getElementById("address").value = data.address || "";
+      document.getElementById("product").value = data.product || "";
+      document.getElementById("channel").value = data.channel || "";
+      document.getElementById("approachDate").value = data.approachDate || "";
+      document.getElementById("manager").value = data.manager || "";
+      document.getElementById("interaction").value = data.interaction || "";
+      document.getElementById("purchaseDate").value = data.purchaseDate || "";
+      document.getElementById("notes").value = data.notes || "";
     }
   </script>
 </body>
