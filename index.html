@@ -164,7 +164,7 @@
     async function fetchCustomers() {
       const customerTableBody = document.getElementById("customerTableBody");
       const summary = document.getElementById("summary");
-      const overview = document.getElementById("overview span");
+      const totalCustomers = document.getElementById("totalCustomers");
       customerTableBody.innerHTML = "";
       summary.innerHTML = "";
 
@@ -212,7 +212,7 @@
           </tr>`;
       });
 
-      overview.innerText = total;
+      totalCustomers.innerText = total;
 
       summary.innerHTML = `
         <p>Tổng kết: 
