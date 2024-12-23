@@ -8,13 +8,14 @@
     body { font-family: Arial, sans-serif; }
     h1, h2 { text-align: center; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; word-wrap: break-word; }
     th { background-color: #f2f2f2; }
     button { margin: 2px; }
     #mainContent { display: none; }
-    .row-red { background-color: #FFCCCC; }
-    .row-yellow { background-color: #FFFF99; }
-    .row-green { background-color: #CCFFCC; }
+    .row-red { background-color: #FF0000; color: white; }
+    .row-yellow { background-color: #FFFF33; }
+    .row-blue { background-color: #ADD8E6; }
+    #summary { margin-top: 20px; font-size: 16px; font-weight: bold; text-align: right; }
   </style>
 </head>
 <body>
@@ -34,7 +35,7 @@
     <!-- Form Thêm/Sửa Khách Hàng -->
     <form id="customerForm">
       <input type="hidden" id="customerId">
-      <input type="date" id="date" placeholder="Ngày" required>
+      <input type="text" id="date" placeholder="Ngày (dd/mm/yyyy)" required>
       <input type="text" id="name" placeholder="Tên Khách Hàng" required>
       <input type="text" id="phone" placeholder="Số Điện Thoại" required>
       <input type="text" id="address" placeholder="Địa Chỉ" required>
@@ -48,7 +49,7 @@
         <option value="Điện Thoại">Điện Thoại</option>
         <option value="Khác">Khác</option>
       </select>
-      <input type="date" id="approachDate" placeholder="Ngày Tiếp Cận" required>
+      <input type="text" id="approachDate" placeholder="Ngày Tiếp Cận (dd/mm/yyyy)" required>
       <input type="text" id="manager" placeholder="Người Phụ Trách" required>
       <select id="interaction" required>
         <option value="">Chọn Kết Quả</option>
@@ -57,7 +58,7 @@
         <option value="Chuẩn bị mua">Chuẩn bị mua</option>
         <option value="Đã mua xe">Đã mua xe</option>
       </select>
-      <input type="date" id="purchaseDate" placeholder="Ngày Mua Dự Kiến" required>
+      <input type="text" id="purchaseDate" placeholder="Ngày Mua Dự Kiến (dd/mm/yyyy)" required>
       <input type="text" id="notes" placeholder="Ghi Chú">
       <button type="submit">Lưu</button>
     </form>
@@ -82,6 +83,8 @@
       </thead>
       <tbody id="customerTableBody"></tbody>
     </table>
+
+    <div id="summary"></div>
   </div>
 
   <!-- Firebase SDK -->
@@ -135,16 +138,16 @@
       e.preventDefault();
       const id = document.getElementById("customerId").value;
       const formData = {
-        date: document.getElementById("date").value,
+        date: formatDate(document.getElementById("date").value),
         name: document.getElementById("name").value,
         phone: document.getElementById("phone").value,
         address: document.getElementById("address").value,
         product: document.getElementById("product").value,
         channel: document.getElementById("channel").value,
-        approachDate: document.getElementById("approachDate").value,
+        approachDate: formatDate(document.getElementById("approachDate").value),
         manager: document.getElementById("manager").value,
         interaction: document.getElementById("interaction").value,
-        purchaseDate: document.getElementById("purchaseDate").value,
+        purchaseDate: formatDate(document.getElementById("purchaseDate").value),
         notes: document.getElementById("notes").value
       };
 
@@ -158,15 +161,31 @@
 
     async function fetchCustomers() {
       const customerTableBody = document.getElementById("customerTableBody");
+      const summary = document.getElementById("summary");
       customerTableBody.innerHTML = "";
+      summary.innerHTML = "";
+
       const snapshot = await db.collection("customers").get();
+      const counts = { "Đang tính lại": 0, "Chưa có ý định": 0, "Chuẩn bị mua": 0, "Đã mua xe": 0 };
 
       snapshot.forEach((doc) => {
         const data = doc.data();
         let rowClass = "";
-        if (!data.interaction) rowClass = "row-red";
-        else if (data.interaction === "Đang tính lại" || data.interaction === "Chưa có ý định") rowClass = "row-yellow";
-        else if (data.interaction === "Chuẩn bị mua") rowClass = "row-green";
+        if (data.interaction === "Đang tính lại") {
+          rowClass = "row-yellow";
+          counts["Đang tính lại"]++;
+        } else if (data.interaction === "Chưa có ý định") {
+          rowClass = "row-yellow";
+          counts["Chưa có ý định"]++;
+        } else if (data.interaction === "Chuẩn bị mua") {
+          rowClass = "row-blue";
+          counts["Chuẩn bị mua"]++;
+        } else if (data.interaction === "Đã mua xe") {
+          rowClass = "row-green";
+          counts["Đã mua xe"]++;
+        } else {
+          rowClass = "row-red";
+        }
 
         customerTableBody.innerHTML += `
           <tr class="${rowClass}">
@@ -187,6 +206,14 @@
             </td>
           </tr>`;
       });
+
+      summary.innerHTML = `
+        <p>Tổng kết: 
+          Đang tính lại: ${counts["Đang tính lại"]}, 
+          Chưa có ý định: ${counts["Chưa có ý định"]}, 
+          Chuẩn bị mua: ${counts["Chuẩn bị mua"]}, 
+          Đã mua xe: ${counts["Đã mua xe"]}
+        </p>`;
     }
 
     async function deleteCustomer(id) {
@@ -205,6 +232,11 @@
           if (document.getElementById(key)) document.getElementById(key).value = data[key];
         }
       }
+    }
+
+    function formatDate(dateString) {
+      const [year, month, day] = dateString.split("-");
+      return `${day}/${month}/${year}`;
     }
   </script>
 </body>
