@@ -5,76 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Lý Khách Hàng Tiềm Năng</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
     h1, h2 { text-align: center; }
-    #mainContent {
-      padding: 10px;
-    }
-    form {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-    }
-    form input, form select, form button {
-      flex: 1 1 300px;
-      padding: 10px;
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      overflow-x: auto;
-      display: block;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-      word-wrap: break-word;
-    }
+    #loginContainer, #mainContent { text-align: center; margin-top: 50px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     th { background-color: #f2f2f2; }
-    button { margin: 2px; padding: 8px; font-size: 14px; }
-    .row-red { background-color: #FF0000; color: white; }
-    .row-yellow { background-color: #FFFF33; }
-    .row-blue { background-color: #0000FF; color: white; }
-    .row-green { background-color: #00FF00; color: black; }
-    #summary, #overview {
-      font-size: 16px;
-      font-weight: bold;
-      text-align: center;
-      margin: 10px 0;
-    }
-    /* Responsive Design */
-    @media (max-width: 768px) {
-      table, thead, tbody, th, td, tr {
-        display: block;
-      }
-      tr {
-        margin-bottom: 10px;
-        border-bottom: 1px solid #ddd;
-      }
-      th, td {
-        text-align: left;
-        display: flex;
-        justify-content: space-between;
-        padding: 10px;
-      }
-      th::after {
-        content: ":";
-      }
-    }
+    button { padding: 10px 20px; margin: 10px; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
   <!-- Đăng Nhập -->
-  <div id="loginContainer" style="text-align: center; margin-top: 50px;">
+  <div id="loginContainer">
     <h2>Đăng Nhập</h2>
     <input type="password" id="password" placeholder="Nhập mật khẩu">
     <button id="loginButton">Đăng Nhập</button>
@@ -82,44 +25,9 @@
   </div>
 
   <!-- Nội Dung Chính -->
-  <div id="mainContent">
+  <div id="mainContent" class="hidden">
     <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
-    <div id="overview">Tổng số khách hàng: <span id="totalCustomers">0</span></div>
-    <div id="summary">Tổng kết: Đang tính lại: 0, Chưa có ý định: 0, Chuẩn bị mua: 0, Đã mua xe: 0</div>
     <button id="logoutButton">Đăng Xuất</button>
-
-    <!-- Form Thêm/Sửa Khách Hàng -->
-    <form id="customerForm">
-      <input type="hidden" id="customerId">
-      <input type="text" id="date" placeholder="Ngày (dd/mm/yyyy)" required>
-      <input type="text" id="name" placeholder="Tên Khách Hàng" required>
-      <input type="text" id="phone" placeholder="Số Điện Thoại" required>
-      <input type="text" id="address" placeholder="Địa Chỉ" required>
-      <input type="text" id="product" placeholder="Sản Phẩm Quan Tâm" required>
-      <select id="channel" required>
-        <option value="">Chọn Kênh</option>
-        <option value="Zalo">Zalo</option>
-        <option value="Facebook">Facebook</option>
-        <option value="Messenger">Messenger</option>
-        <option value="Tiktok">Tiktok</option>
-        <option value="Điện Thoại">Điện Thoại</option>
-        <option value="Khác">Khác</option>
-      </select>
-      <input type="text" id="approachDate" placeholder="Ngày Tiếp Cận (dd/mm/yyyy)" required>
-      <input type="text" id="manager" placeholder="Người Phụ Trách" required>
-      <select id="interaction" required>
-        <option value="">Chọn Kết Quả</option>
-        <option value="Đang tính lại">Đang tính lại</option>
-        <option value="Chưa có ý định">Chưa có ý định</option>
-        <option value="Chuẩn bị mua">Chuẩn bị mua</option>
-        <option value="Đã mua xe">Đã mua xe</option>
-      </select>
-      <input type="text" id="purchaseDate" placeholder="Ngày Mua Dự Kiến (dd/mm/yyyy)" required>
-      <input type="text" id="notes" placeholder="Ghi Chú">
-      <button type="submit">Lưu</button>
-    </form>
-
-    <!-- Bảng Hiển Thị -->
     <table>
       <thead>
         <tr>
@@ -127,13 +35,6 @@
           <th>Tên Khách Hàng</th>
           <th>Số Điện Thoại</th>
           <th>Địa Chỉ</th>
-          <th>Sản Phẩm Quan Tâm</th>
-          <th>Thông Qua Kênh</th>
-          <th>Ngày Tiếp Cận</th>
-          <th>Người Phụ Trách</th>
-          <th>Kết Quả Tương Tác</th>
-          <th>Ngày Mua Dự Kiến</th>
-          <th>Ghi Chú</th>
           <th>Hành Động</th>
         </tr>
       </thead>
@@ -141,11 +42,38 @@
     </table>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
   <script>
-    // Include Firebase configurations and scripts (no change from your original script)
+    // Kiểm tra trạng thái đăng nhập khi tải trang
+    window.onload = () => {
+      if (localStorage.getItem("loggedIn") === "true") {
+        document.getElementById("loginContainer").classList.add("hidden");
+        document.getElementById("mainContent").classList.remove("hidden");
+      } else {
+        document.getElementById("loginContainer").classList.remove("hidden");
+        document.getElementById("mainContent").classList.add("hidden");
+      }
+    };
+
+    // Xử lý nút Đăng nhập
+    document.getElementById("loginButton").onclick = () => {
+      const password = document.getElementById("password").value;
+      if (password === "123456") {
+        localStorage.setItem("loggedIn", "true");
+        document.getElementById("loginContainer").classList.add("hidden");
+        document.getElementById("mainContent").classList.remove("hidden");
+      } else {
+        const error = document.getElementById("errorMessage");
+        error.style.display = "block";
+        setTimeout(() => error.style.display = "none", 3000);
+      }
+    };
+
+    // Xử lý nút Đăng xuất
+    document.getElementById("logoutButton").onclick = () => {
+      localStorage.removeItem("loggedIn");
+      document.getElementById("loginContainer").classList.remove("hidden");
+      document.getElementById("mainContent").classList.add("hidden");
+    };
   </script>
 </body>
 </html>
