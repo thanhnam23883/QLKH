@@ -5,54 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quản Lý Khách Hàng Tiềm Năng</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    h1, h2 {
-      text-align: center;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      border: 1px solid #ddd;
-      padding: 8px;
-      text-align: center;
-      word-wrap: break-word;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-    button {
-      margin: 5px;
-      padding: 5px 10px;
-      cursor: pointer;
-    }
-    #mainContent {
-      display: none;
-      padding: 20px;
-    }
-    .row-red {
-      background-color: #FFCCCC;
-    }
-    .row-yellow {
-      background-color: #FFFF99;
-    }
-    .row-green {
-      background-color: #CCFFCC;
-    }
-    .row-blue {
-      background-color: #99CCFF;
-    }
-    #summary {
-      text-align: center;
-      margin: 20px 0;
-    }
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+    h1, h2 { text-align: center; margin: 10px 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; word-wrap: break-word; }
+    th { background-color: #f2f2f2; }
+    button { margin: 5px; }
+    #mainContent { display: none; padding: 10px; }
+    .row-red { background-color: #FFCCCC; }
+    .row-yellow { background-color: #FFFF99; }
+    .row-blue { background-color: #CCFFCC; }
+    .summary { font-size: 16px; font-weight: bold; text-align: center; margin: 10px 0; }
   </style>
 </head>
 <body>
@@ -67,28 +30,15 @@
   <!-- Nội Dung Chính -->
   <div id="mainContent">
     <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
-    <div id="summary">Tổng số khách hàng: 0</div>
+    <div class="summary" id="summary">Tổng khách hàng: 0</div>
     <button id="logoutButton">Đăng Xuất</button>
 
-    <!-- Form Thêm/Sửa Khách Hàng -->
+    <!-- Form -->
     <form id="customerForm">
       <input type="hidden" id="customerId">
-      <input type="date" id="date" placeholder="Ngày" required>
       <input type="text" id="name" placeholder="Tên Khách Hàng" required>
       <input type="text" id="phone" placeholder="Số Điện Thoại" required>
-      <input type="text" id="address" placeholder="Địa Chỉ" required>
       <input type="text" id="product" placeholder="Sản Phẩm Quan Tâm" required>
-      <select id="channel" required>
-        <option value="">Chọn Kênh</option>
-        <option value="Zalo">Zalo</option>
-        <option value="Facebook">Facebook</option>
-        <option value="Messenger">Messenger</option>
-        <option value="Tiktok">Tiktok</option>
-        <option value="Điện Thoại">Điện Thoại</option>
-        <option value="Khác">Khác</option>
-      </select>
-      <input type="date" id="approachDate" placeholder="Ngày Tiếp Cận" required>
-      <input type="text" id="manager" placeholder="Người Phụ Trách" required>
       <select id="interaction" required>
         <option value="">Chọn Kết Quả</option>
         <option value="Đang tính lại">Đang tính lại</option>
@@ -96,8 +46,6 @@
         <option value="Chuẩn bị mua">Chuẩn bị mua</option>
         <option value="Đã mua xe">Đã mua xe</option>
       </select>
-      <input type="date" id="purchaseDate" placeholder="Ngày Mua Dự Kiến" required>
-      <input type="text" id="notes" placeholder="Ghi Chú">
       <button type="submit">Lưu</button>
     </form>
 
@@ -105,17 +53,10 @@
     <table>
       <thead>
         <tr>
-          <th>Ngày</th>
-          <th>Tên Khách Hàng</th>
+          <th>Tên</th>
           <th>Số Điện Thoại</th>
-          <th>Địa Chỉ</th>
-          <th>Sản Phẩm Quan Tâm</th>
-          <th>Thông Qua Kênh</th>
-          <th>Ngày Tiếp Cận</th>
-          <th>Người Phụ Trách</th>
-          <th>Kết Quả Tương Tác</th>
-          <th>Ngày Mua Dự Kiến</th>
-          <th>Ghi Chú</th>
+          <th>Sản Phẩm</th>
+          <th>Kết Quả</th>
           <th>Hành Động</th>
         </tr>
       </thead>
@@ -123,12 +64,11 @@
     </table>
   </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+    import { getFirestore, collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
-  <!-- App Script -->
-  <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCmI0wn8bymGbSoAj5fdHwazY-80GePliY",
       authDomain: "customermanagement-a522e.firebaseapp.com",
@@ -139,8 +79,8 @@
       measurementId: "G-GCETTY2Q9T"
     };
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     document.getElementById("loginButton").onclick = () => {
       const password = document.getElementById("password").value;
@@ -172,21 +112,17 @@
       e.preventDefault();
       const id = document.getElementById("customerId").value;
       const formData = {
-        date: document.getElementById("date").value,
         name: document.getElementById("name").value,
         phone: document.getElementById("phone").value,
-        address: document.getElementById("address").value,
         product: document.getElementById("product").value,
-        channel: document.getElementById("channel").value,
-        approachDate: document.getElementById("approachDate").value,
-        manager: document.getElementById("manager").value,
-        interaction: document.getElementById("interaction").value,
-        purchaseDate: document.getElementById("purchaseDate").value,
-        notes: document.getElementById("notes").value
+        interaction: document.getElementById("interaction").value
       };
 
-      if (id) await db.collection("customers").doc(id).update(formData);
-      else await db.collection("customers").add(formData);
+      if (id) {
+        await updateDoc(doc(db, "customers", id), formData);
+      } else {
+        await addDoc(collection(db, "customers"), formData);
+      }
 
       fetchCustomers();
       e.target.reset();
@@ -195,62 +131,38 @@
 
     async function fetchCustomers() {
       const customerTableBody = document.getElementById("customerTableBody");
-      const summary = document.getElementById("summary");
       customerTableBody.innerHTML = "";
-      summary.innerHTML = "Tổng số khách hàng: 0";
-
-      const snapshot = await db.collection("customers").get();
-      let total = 0;
-
-      snapshot.forEach((doc) => {
-        total++;
+      const querySnapshot = await getDocs(collection(db, "customers"));
+      querySnapshot.forEach((doc) => {
         const data = doc.data();
-        let rowClass = "";
-
-        if (!data.interaction) rowClass = "row-red";
-        else if (data.interaction === "Đang tính lại" || data.interaction === "Chưa có ý định") rowClass = "row-yellow";
-        else if (data.interaction === "Chuẩn bị mua") rowClass = "row-blue";
-        else if (data.interaction === "Đã mua xe") rowClass = "row-green";
-
         customerTableBody.innerHTML += `
-          <tr class="${rowClass}">
-            <td>${data.date}</td>
+          <tr>
             <td>${data.name}</td>
             <td>${data.phone}</td>
-            <td>${data.address}</td>
             <td>${data.product}</td>
-            <td>${data.channel}</td>
-            <td>${data.approachDate}</td>
-            <td>${data.manager}</td>
             <td>${data.interaction}</td>
-            <td>${data.purchaseDate}</td>
-            <td>${data.notes}</td>
             <td>
               <button onclick="editCustomer('${doc.id}')">Sửa</button>
               <button onclick="deleteCustomer('${doc.id}')">Xóa</button>
             </td>
           </tr>`;
       });
-
-      summary.innerHTML = `Tổng số khách hàng: ${total}`;
     }
 
     async function deleteCustomer(id) {
-      if (confirm("Bạn chắc chắn muốn xóa khách hàng này?")) {
-        await db.collection("customers").doc(id).delete();
-        fetchCustomers();
-      }
+      await deleteDoc(doc(db, "customers", id));
+      fetchCustomers();
     }
 
     async function editCustomer(id) {
-      const doc = await db.collection("customers").doc(id).get();
-      if (doc.exists) {
-        const data = doc.data();
+      const docSnap = await getDoc(doc(db, "customers", id));
+      if (docSnap.exists()) {
+        const data = docSnap.data();
         document.getElementById("customerId").value = id;
-        Object.keys(data).forEach(key => {
-          const input = document.getElementById(key);
-          if (input) input.value = data[key];
-        });
+        document.getElementById("name").value = data.name;
+        document.getElementById("phone").value = data.phone;
+        document.getElementById("product").value = data.product;
+        document.getElementById("interaction").value = data.interaction;
       }
     }
   </script>
