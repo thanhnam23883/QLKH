@@ -2,21 +2,19 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Quản Lý Khách Hàng Tiềm Năng</title>
   <style>
-    body { font-family: Arial, sans-serif; }
+    body { font-family: Arial, sans-serif; margin: 10px; }
     h1, h2 { text-align: center; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; word-wrap: break-word; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
     th { background-color: #f2f2f2; }
-    button { margin: 2px; }
+    button { margin: 5px; padding: 5px 10px; }
     #mainContent { display: none; }
-    .row-red { background-color: #FF0000; color: white; }
-    .row-yellow { background-color: #FFFF33; }
-    .row-blue { background-color: #0000FF; color: white; }
-    #summary { font-size: 16px; font-weight: bold; text-align: center; margin-top: 10px; }
-    #overview { font-size: 16px; font-weight: bold; text-align: center; margin: 10px 0; }
+    .row-red { background-color: #FFCCCC; }
+    .row-yellow { background-color: #FFFF99; }
+    .row-green { background-color: #CCFFCC; }
   </style>
 </head>
 <body>
@@ -31,14 +29,12 @@
   <!-- Nội Dung Chính -->
   <div id="mainContent">
     <h1>Quản Lý Khách Hàng Tiềm Năng</h1>
-    <div id="overview">Tổng số khách hàng: <span id="totalCustomers">0</span></div>
-    <div id="summary">Tổng kết: Đang tính lại: 0, Chưa có ý định: 0, Chuẩn bị mua: 0, Đã mua xe: 0</div>
     <button id="logoutButton">Đăng Xuất</button>
 
     <!-- Form Thêm/Sửa Khách Hàng -->
     <form id="customerForm">
       <input type="hidden" id="customerId">
-      <input type="text" id="date" placeholder="Ngày (dd/mm/yyyy)" required>
+      <input type="date" id="date" placeholder="Ngày" required>
       <input type="text" id="name" placeholder="Tên Khách Hàng" required>
       <input type="text" id="phone" placeholder="Số Điện Thoại" required>
       <input type="text" id="address" placeholder="Địa Chỉ" required>
@@ -52,7 +48,7 @@
         <option value="Điện Thoại">Điện Thoại</option>
         <option value="Khác">Khác</option>
       </select>
-      <input type="text" id="approachDate" placeholder="Ngày Tiếp Cận (dd/mm/yyyy)" required>
+      <input type="date" id="approachDate" placeholder="Ngày Tiếp Cận" required>
       <input type="text" id="manager" placeholder="Người Phụ Trách" required>
       <select id="interaction" required>
         <option value="">Chọn Kết Quả</option>
@@ -61,7 +57,7 @@
         <option value="Chuẩn bị mua">Chuẩn bị mua</option>
         <option value="Đã mua xe">Đã mua xe</option>
       </select>
-      <input type="text" id="purchaseDate" placeholder="Ngày Mua Dự Kiến (dd/mm/yyyy)" required>
+      <input type="date" id="purchaseDate" placeholder="Ngày Mua Dự Kiến" required>
       <input type="text" id="notes" placeholder="Ghi Chú">
       <button type="submit">Lưu</button>
     </form>
@@ -107,7 +103,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // Đăng nhập
     document.getElementById("loginButton").onclick = () => {
       const password = document.getElementById("password").value;
       if (password === "123456") {
@@ -134,21 +129,20 @@
       }
     };
 
-    // Thêm/Sửa khách hàng
     document.getElementById("customerForm").onsubmit = async (e) => {
       e.preventDefault();
       const id = document.getElementById("customerId").value;
       const formData = {
-        date: formatDate(document.getElementById("date").value),
+        date: document.getElementById("date").value,
         name: document.getElementById("name").value,
         phone: document.getElementById("phone").value,
         address: document.getElementById("address").value,
         product: document.getElementById("product").value,
         channel: document.getElementById("channel").value,
-        approachDate: formatDate(document.getElementById("approachDate").value),
+        approachDate: document.getElementById("approachDate").value,
         manager: document.getElementById("manager").value,
         interaction: document.getElementById("interaction").value,
-        purchaseDate: formatDate(document.getElementById("purchaseDate").value),
+        purchaseDate: document.getElementById("purchaseDate").value,
         notes: document.getElementById("notes").value
       };
 
@@ -162,34 +156,15 @@
 
     async function fetchCustomers() {
       const customerTableBody = document.getElementById("customerTableBody");
-      const summary = document.getElementById("summary");
-      const totalCustomers = document.getElementById("totalCustomers");
       customerTableBody.innerHTML = "";
-      summary.innerHTML = "";
-
       const snapshot = await db.collection("customers").get();
-      const counts = { "Đang tính lại": 0, "Chưa có ý định": 0, "Chuẩn bị mua": 0, "Đã mua xe": 0 };
-      let total = 0;
 
       snapshot.forEach((doc) => {
-        total++;
         const data = doc.data();
         let rowClass = "";
-        if (data.interaction === "Đang tính lại") {
-          rowClass = "row-yellow";
-          counts["Đang tính lại"]++;
-        } else if (data.interaction === "Chưa có ý định") {
-          rowClass = "row-yellow";
-          counts["Chưa có ý định"]++;
-        } else if (data.interaction === "Chuẩn bị mua") {
-          rowClass = "row-blue";
-          counts["Chuẩn bị mua"]++;
-        } else if (data.interaction === "Đã mua xe") {
-          rowClass = "row-green";
-          counts["Đã mua xe"]++;
-        } else {
-          rowClass = "row-red";
-        }
+        if (!data.interaction) rowClass = "row-red";
+        else if (data.interaction === "Đang tính lại" || data.interaction === "Chưa có ý định") rowClass = "row-yellow";
+        else if (data.interaction === "Chuẩn bị mua") rowClass = "row-green";
 
         customerTableBody.innerHTML += `
           <tr class="${rowClass}">
@@ -205,22 +180,11 @@
             <td>${data.purchaseDate}</td>
             <td>${data.notes}</td>
             <td>
-              <button onclick="editCustomer('${doc.id}')">Sửa</button>
+              <button onclick="editCustomer('${doc.id}', ${JSON.stringify(data)})">Sửa</button>
               <button onclick="deleteCustomer('${doc.id}')">Xóa</button>
             </td>
           </tr>`;
       });
-
-      totalCustomers.innerText = total;
-
-      summary.innerHTML = `
-        
-        Tổng số khách hàng: ${total}, 
-        Đang tính lại: ${counts["Đang tính lại"]}, 
-        Chưa có ý định: ${counts["Chưa có ý định"]}, 
-        Chuẩn bị mua: ${counts["Chuẩn bị mua"]},
-        Đã mua xe: ${counts["Đã mua xe"]}
-      `;
     }
 
     async function deleteCustomer(id) {
@@ -230,20 +194,11 @@
       }
     }
 
-    async function editCustomer(id) {
-      const doc = await db.collection("customers").doc(id).get();
-      if (doc.exists) {
-        const data = doc.data();
-        document.getElementById("customerId").value = id;
-        for (let key in data) {
-          if (document.getElementById(key)) document.getElementById(key).value = data[key];
-        }
-      }
-    }
-
-    function formatDate(dateString) {
-      const [year, month, day] = dateString.split("-");
-      return `${day}/${month}/${year}`;
+    function editCustomer(id, data) {
+      document.getElementById("customerId").value = id;
+      Object.keys(data).forEach((key) => {
+        if (document.getElementById(key)) document.getElementById(key).value = data[key];
+      });
     }
   </script>
 </body>
